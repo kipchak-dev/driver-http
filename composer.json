@@ -1,10 +1,10 @@
 {
-    "name": "kipchak/driver-couchdb",
+    "name": "kipchak/driver-http",
     "type": "middleware",
-    "description": "A Kipchak driver (dependency) for the Kipchak API Development Kit (ADK)",
+    "description": "An HTTP Kipchak driver (dependency) for the Kipchak API Development Kit (ADK)",
     "keywords": [
         "APIs",
-        "CouchDB",
+        "HTTP",
         "Microservices",
         "Mamluk"
     ],
@@ -13,14 +13,10 @@
     "config": {
         "sort-packages": true
     },
-    "autoload": {
-        "psr-4": {
-            "Mamluk\\Kipchak\\Middleware\\CouchDB\\": "src/"
-        }
-    },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "mamluk/couchdb": "^0.7.0"
+        "guzzlehttp/guzzle": "^7.10",
+        "illuminate/http": "^12.40"
     }
 }
