@@ -1,8 +1,9 @@
 <?php
 
-namespace Mamluk\Kipchak\Driver\Http;
+namespace Kipchak\Driver\Http;
 
-use Mamluk\Kipchak\Interfaces;
+use Kipchak\Driver\Http\Library\Http;
+use Kipchak\Core\Interfaces;
 use Psr\Container\ContainerInterface;
 
 class Driver implements Interfaces\Driver
@@ -16,9 +17,7 @@ class Driver implements Interfaces\Driver
 
     public static function set(): void
     {
-        self::$container->set('driver.http', function(ContainerInterface $c): Library\Http {
-            return new Library\Http();
-        });
+        self::$container->set(Http::class, new Library\Http());
     }
 
     public static function get(?string $configKey = null): Library\Http
