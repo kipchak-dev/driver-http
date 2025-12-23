@@ -13,10 +13,16 @@
     "config": {
         "sort-packages": true
     },
+    "autoload": {
+        "psr-4": {
+            "Mamluk\\Kipchak\\Driver\\Http\\": "src/"
+        }
+    },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
         "guzzlehttp/guzzle": "^7.10",
-        "illuminate/http": "^12.40"
+        "illuminate/http": "^12.40",
+        "mamluk/kipchak": "2.x-dev"
     }
 }
