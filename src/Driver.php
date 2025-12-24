@@ -13,6 +13,7 @@ class Driver implements Interfaces\Driver
     public static function initialise(ContainerInterface $container): void
     {
         self::$container = $container;
+        self::set();
     }
 
     public static function set(): void
