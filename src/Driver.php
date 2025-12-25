@@ -21,7 +21,7 @@ class Driver implements Interfaces\Driver
         self::$container->set(Http::class, new Library\Http());
     }
 
-    public static function get(?string $configKey = null): Library\Http
+    public static function get(?string $configKey = null, ?string $configFileName = null): Library\Http
     {
         return self::$container->get('driver.http');
     }
