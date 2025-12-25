@@ -10,7 +10,7 @@ class Driver implements Interfaces\Driver
 {
     protected static ContainerInterface $container;
 
-    public static function initialise(ContainerInterface $container): void
+    public static function initialise(ContainerInterface $container, ?string $configFileName = null): void
     {
         self::$container = $container;
         self::set();
@@ -21,7 +21,7 @@ class Driver implements Interfaces\Driver
         self::$container->set(Http::class, new Library\Http());
     }
 
-    public static function get(?string $configKey = null, ?string $configFileName = null): Library\Http
+    public static function get(?string $configKey = null): Library\Http
     {
         return self::$container->get('driver.http');
     }
