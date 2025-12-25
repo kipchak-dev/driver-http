@@ -6,7 +6,7 @@ use Kipchak\Driver\Http\Library\Http;
 use Kipchak\Core\Interfaces;
 use Psr\Container\ContainerInterface;
 
-class Driver implements Interfaces\Driver
+class Http implements Interfaces\Driver
 {
     protected static ContainerInterface $container;
 
