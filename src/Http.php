@@ -2,7 +2,7 @@
 
 namespace Kipchak\Driver\Http;
 
-use Kipchak\Driver\Http\Library\Http;
+use Kipchak\Driver\Http\Library\Http as HttpClient;
 use Kipchak\Core\Interfaces;
 use Psr\Container\ContainerInterface;
 
@@ -18,10 +18,10 @@ class Http implements Interfaces\Driver
 
     public static function set(): void
     {
-        self::$container->set(Http::class, new Library\Http());
+        self::$container->set(Http::class, new HttpClient());
     }
 
-    public static function get(?string $configKey = null): Library\Http
+    public static function get(?string $configKey = null): HttpClient
     {
         return self::$container->get('driver.http');
     }
