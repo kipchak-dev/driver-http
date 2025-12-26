@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "59e92f446b258215e36065e6b4ab36cf",
+    "content-hash": "eb991b4cc6a63f7bf5fc07e3c3a06737",
     "packages": [
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -1300,11 +1300,11 @@
         },
         {
             "name": "kipchak/core",
-            "version": "2.x-dev",
+            "version": "2.0",
             "source": {
                 "type": "git",
                 "url": "https://1x.ax/mamluk/kipchak/core",
-                "reference": "0f281087fc476a80864b4aa8bcb73a320c150da3"
+                "reference": "8ea34fa8ce593f705a63faca4fd5eee82259198d"
             },
             "require": {
                 "cuyz/valinor": "^1.17",
@@ -1333,7 +1333,7 @@
                 "apis",
                 "microservices"
             ],
-            "time": "2025-12-25T08:02:10+00:00"
+            "time": "2025-12-25T10:26:38+00:00"
         },
         {
             "name": "laravel/serializable-closure",
@@ -4459,9 +4459,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "kipchak/core": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {},
