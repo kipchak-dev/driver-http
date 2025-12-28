@@ -20,7 +20,7 @@ Install it via composer: `composer require kipchak/driver-http`.
 
 ```php
 // Load the HTTP driver.
-$http = \Mamluk\Kipchak\Driver\Http\Http::get()
+$http = Kipchak\Driver\Http\Http::get()
 // Use the HTTP client ($http) client as you normally would.
 ```
 See the methods available in the client here: https://laravel.com/docs/12.x/http-client. All methods
