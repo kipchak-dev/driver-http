@@ -18,7 +18,7 @@ class Http implements Interfaces\Driver
 
     public static function set(): void
     {
-        self::$container->set(Http::class, new HttpClient());
+        self::$container->set('driver.http', new HttpClient());
     }
 
     public static function get(?string $configKey = null): HttpClient
