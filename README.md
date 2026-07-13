@@ -4,6 +4,19 @@ This driver is an HTTP client based on the illuminate/http package that ships wi
 
 It is used to make HTTP requests within Kipchak.
 
+## Requirements
+
+- PHP 8.4 or 8.5
+- [Kipchak](https://kipchak.dev) `^2 || ^3`
+- `illuminate/http` `^13`
+
+## Versions
+
+- **2.0** — upgrades `illuminate/http` from 12.x to 13.x and adds PHP 8.5 support. The driver's public API is unchanged. Requires `kipchak/core: ^2 || ^3`.
+- **1.x** — `illuminate/http` `^12`, `kipchak/core` `^2`.
+
+See the [Kipchak upgrade guide](https://kipchak.dev/docs/upgrades) for details.
+
 #### Composer Package 
 
 `kipchak/driver-http`
@@ -23,7 +36,7 @@ Install it via composer: `composer require kipchak/driver-http`.
 $http = Kipchak\Driver\Http\Http::get()
 // Use the HTTP client ($http) client as you normally would.
 ```
-See the methods available in the client here: https://laravel.com/docs/12.x/http-client. All methods
+See the methods available in the client here: https://laravel.com/docs/13.x/http-client. All methods
 in the Laravel documentation called via `Http::method()` are available via `$http->method()` in Kipchak.
 
 ## What is a Kipchak Driver?
@@ -47,5 +60,5 @@ Each driver defines an implementation of Kipchak's Driver Interface. Where appli
 accept a parameter for a specific instance of the driver specified as a config property, for instance, in the case
 of multiple database connections or S3 buckets.
 
-So you may access the driver by invoking \Mamluk\Kipchak\Driver\Memcached\Memcached::get('cache'), where
+So you may access the driver by invoking \Kipchak\Driver\Memcached\Memcached::get('cache'), where
 `cache` is the name of one of the memcached connection pools specified in the config file.
