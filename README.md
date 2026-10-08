@@ -1,8 +1,8 @@
 # HTTP Driver for Kipchak
 
-This driver is an HTTP client based on the illuminate/http package that ships with Laravel.
-
-It is used to make HTTP requests within Kipchak.
+This driver provides Kipchak's HTTP clients. By default, `Http::get()` returns Laravel's HTTP client
+(`illuminate/http`). Named clients, configured in `config/kipchak.http.php`, can also be a PSR-18 client or
+the PSR-17 factories, for libraries and SDKs that require the PHP standards.
 
 ## Requirements
 
@@ -12,6 +12,9 @@ It is used to make HTTP requests within Kipchak.
 
 ## Versions
 
+- **2.10** — named clients from an optional `config/kipchak.http.php`, of type `laravel`, `psr18` or `psr17`,
+  with `Http::get('<name>')`, `Http::psr18()` and `Http::psr17()`. Without the file nothing changes:
+  `Http::get()` returns Laravel's client.
 - **2.0** — upgrades `illuminate/http` from 12.x to 13.x and adds PHP 8.5 support. The driver's public API is unchanged. Requires `kipchak/core: ^2 || ^3`.
 - **1.x** — `illuminate/http` `^12`, `kipchak/core` `^2`.
 
@@ -23,7 +26,20 @@ See the [Kipchak upgrade guide](https://kipchak.dev/docs/upgrades) for details.
 
 #### Sample Config File:
 
-This driver does not require any configuration.
+None is required. To define named clients, copy [`sample.config.php`](sample.config.php) to
+`config/kipchak.http.php`:
+
+```php
+return [
+    'default' => ['type' => 'laravel'],
+    'github' => ['type' => 'laravel', 'base_url' => 'https://api.github.com', 'options' => ['timeout' => 10]],
+    'ai' => ['type' => 'psr18', 'options' => ['timeout' => 120]],
+    'psr17' => ['type' => 'psr17'],
+];
+```
+
+`options` are Guzzle request options. A `psr18` client is `GuzzleHttp\Client` (PSR-18) and `psr17` is
+`GuzzleHttp\Psr7\HttpFactory` (all six PSR-17 factories).
 
 ## How to use it?
 
@@ -38,6 +54,24 @@ $http = Kipchak\Driver\Http\Http::get()
 ```
 See the methods available in the client here: https://laravel.com/docs/13.x/http-client. All methods
 in the Laravel documentation called via `Http::method()` are available via `$http->method()` in Kipchak.
+
+```php
+$psr18 = Kipchak\Driver\Http\Http::psr18('ai');      // Psr\Http\Client\ClientInterface
+$psr17 = Kipchak\Driver\Http\Http::psr17('psr17');   // GuzzleHttp\Psr7\HttpFactory
+```
+
+## Tests
+
+```bash
+composer install
+vendor/bin/http_test_server &     # the PSR-18 suite's server, on 127.0.0.1:10000
+./vendor/bin/phpunit
+```
+
+The `Compliance` suite runs the official PSR-18 (`php-http/client-integration-tests`) and PSR-17
+(`http-interop/http-factory-tests`) tests against configured clients. Without the test server, the PSR-18
+client tests are skipped; the feature tests need internet access. One feature test is replaced: following
+redirects is an optional feature that PSR-18 does not specify, and the PSR-18 client returns the 3xx response.
 
 ## What is a Kipchak Driver?
 

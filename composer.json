@@ -23,6 +23,21 @@
     "require": {
         "guzzlehttp/guzzle": "^7.10",
         "illuminate/http": "^13.0",
-        "kipchak/core": "^2 || ^3"
+        "kipchak/core": "^2 || ^3",
+        "psr/http-client": "^1"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Kipchak\\Driver\\Http\\Tests\\": "tests/"
+        }
+    },
+    "suggest": {
+        "kipchak/driver-config": "Named clients from config/kipchak.http.php; without it, Http::get() returns Laravel's client as before"
+    },
+    "require-dev": {
+        "http-interop/http-factory-tests": "^2.4",
+        "kipchak/driver-config": "^1",
+        "php-http/client-integration-tests": "^4.1",
+        "phpunit/phpunit": "^12"
     }
 }

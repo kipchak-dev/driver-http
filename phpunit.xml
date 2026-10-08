@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="vendor/autoload.php" colors="true" cacheResult="false" failOnWarning="true">
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Compliance">
+            <directory>tests/Compliance</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <!-- The PSR-18 suite's server: vendor/bin/http_test_server (php -S 127.0.0.1:10000) -->
+        <server name="TEST_SERVER" value="http://127.0.0.1:10000/server.php"/>
+    </php>
+</phpunit>
