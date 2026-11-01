@@ -12,6 +12,9 @@ the PSR-17 factories, for libraries and SDKs that require the PHP standards.
 
 ## Versions
 
+- **2.14** — every request from one Laravel client reuses the same connection pool, so connections stay open
+  between requests in a FrankenPHP worker. Before, each request opened a new connection, which under load left
+  thousands of sockets in `TIME_WAIT` and made requests fail. No change to the API.
 - **2.10** — named clients from an optional `config/kipchak.http.php`, of type `laravel`, `psr18` or `psr17`,
   with `Http::get('<name>')`, `Http::psr18()` and `Http::psr17()`. Without the file nothing changes:
   `Http::get()` returns Laravel's client.

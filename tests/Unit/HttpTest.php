@@ -160,4 +160,29 @@ final class HttpTest extends TestCase
 
         Clients::boot($config);
     }
+
+    public function testRequestsFromOneClientShareAGuzzleHandlerSoConnectionsAreReused(): void
+    {
+        $handler = static function (\Illuminate\Http\Client\PendingRequest $request): mixed {
+            return (new \ReflectionProperty($request, 'handler'))->getValue($request);
+        };
+
+        $client = new HttpClient();
+        $first = $handler($client->acceptJson());
+        $second = $handler($client->withToken('x')->timeout(2));
+
+        $this->assertIsCallable($first);
+        $this->assertSame($first, $second);
+        $this->assertNotSame($first, $handler((new HttpClient())->acceptJson()), 'Each client has its own');
+    }
+
+    public function testFakesStillWorkWithTheSharedHandler(): void
+    {
+        $client = new HttpClient();
+        $client->fake(['*' => ['ok' => true]]);
+
+        $this->assertTrue($client->get('https://example.test/a')->json('ok'));
+        $this->assertTrue($client->get('https://example.test/b')->json('ok'));
+        $client->assertSentCount(2);
+    }
 }
