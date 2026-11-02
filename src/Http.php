@@ -3,6 +3,7 @@
 namespace Kipchak\Driver\Http;
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\HttpFactory;
 use Kipchak\Core\Interfaces;
 use Kipchak\Driver\Config\Config;
@@ -10,6 +11,7 @@ use Kipchak\Driver\Http\Config\ClientConfig;
 use Kipchak\Driver\Http\Config\ClientType;
 use Kipchak\Driver\Http\Exceptions\InvalidConfiguration;
 use Kipchak\Driver\Http\Library\Http as HttpClient;
+use Kipchak\Driver\Http\Library\Middleware;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientInterface;
 
@@ -111,11 +113,29 @@ class Http implements Interfaces\Driver
     {
         return match ($client->type) {
             ClientType::Laravel => self::laravel($client),
-            ClientType::Psr18 => new GuzzleClient(
+            ClientType::Psr18 => new GuzzleClient(self::withMiddleware(
                 $client->baseUrl === null ? $client->options : ['base_uri' => $client->baseUrl] + $client->options
-            ),
+            )),
             ClientType::Psr17 => new HttpFactory(),
         };
+    }
+
+    /**
+     * Guzzle options with the shared middleware (Library\Middleware) added to the handler stack: a new stack, or the
+     * one given as 'handler'. A plain callable handler is left as it is.
+     */
+    private static function withMiddleware(array $options): array
+    {
+        $handler = $options['handler'] ?? null;
+        if ($handler === null) {
+            $handler = HandlerStack::create();
+            $options['handler'] = $handler;
+        }
+        if ($handler instanceof HandlerStack) {
+            $handler->push(Middleware::dispatcher(), 'kipchak.middleware');
+        }
+
+        return $options;
     }
 
     private static function laravel(ClientConfig $client): HttpClient

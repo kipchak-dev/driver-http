@@ -5,14 +5,20 @@ declare(strict_types=1);
 namespace Kipchak\Driver\Http\Tests\Unit;
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\HttpFactory;
 use Kipchak\Driver\Http\Exceptions\InvalidConfiguration;
 use Kipchak\Driver\Http\Http;
 use Kipchak\Driver\Http\Library\Http as HttpClient;
+use Kipchak\Driver\Http\Library\Middleware;
 use Kipchak\Driver\Http\Tests\Support\Clients;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestInterface;
 
 final class HttpTest extends TestCase
 {
@@ -184,5 +190,78 @@ final class HttpTest extends TestCase
         $this->assertTrue($client->get('https://example.test/a')->json('ok'));
         $this->assertTrue($client->get('https://example.test/b')->json('ok'));
         $client->assertSentCount(2);
+    }
+
+    public function testSharedMiddlewareWrapsEveryLaravelClientsRequests(): void
+    {
+        $seen = [];
+        Middleware::push('test', self::recorder($seen, 'outer'));
+        Middleware::push('second', self::recorder($seen, 'inner'));
+        try {
+            $client = new HttpClient();
+            $client->fake(['*' => ['ok' => true]]);
+            $client->get('https://example.test/a');
+            $other = new HttpClient();
+            $other->fake(['*' => ['ok' => true]]);
+            $other->get('https://example.test/b');
+        } finally {
+            Middleware::remove('test');
+            Middleware::remove('second');
+        }
+
+        $this->assertSame(['outer https://example.test/a', 'inner https://example.test/a', 'outer https://example.test/b', 'inner https://example.test/b'], $seen);
+    }
+
+    public function testSharedMiddlewareRegisteredAfterAPsr18ClientWasBuiltStillApplies(): void
+    {
+        $mock = new MockHandler([new Response(200), new Response(200)]);
+        Clients::boot(['ai' => ['type' => 'psr18', 'options' => ['handler' => HandlerStack::create($mock)]]]);
+        $client = Http::psr18('ai');
+        $client->sendRequest(new Request('GET', 'https://example.test/before'));
+
+        $seen = [];
+        Middleware::push('test', self::recorder($seen, 'seen'));
+        try {
+            $client->sendRequest(new Request('GET', 'https://example.test/after'));
+        } finally {
+            Middleware::remove('test');
+        }
+
+        $this->assertSame(['seen https://example.test/after'], $seen);
+    }
+
+    public function testPsr18ClientsWithoutAHandlerGetAStackWithTheSharedMiddleware(): void
+    {
+        Clients::boot(['ai' => ['type' => 'psr18']]);
+
+        $stack = Http::psr18('ai')->getConfig('handler');
+        $this->assertInstanceOf(HandlerStack::class, $stack);
+        $this->assertStringContainsString('kipchak.middleware', (string) $stack);
+    }
+
+    public function testPushingANameAgainReplacesIt(): void
+    {
+        Middleware::push('a', fn (callable $handler) => $handler);
+        Middleware::push('b', fn (callable $handler) => $handler);
+        Middleware::push('a', fn (callable $handler) => $handler);
+
+        $this->assertSame(['b', 'a'], array_keys(Middleware::all()));
+        Middleware::remove('a');
+        Middleware::remove('b');
+        $this->assertSame([], Middleware::all());
+    }
+
+    /**
+     * @param list<string> $seen
+     */
+    private static function recorder(array &$seen, string $label): callable
+    {
+        return static function (callable $handler) use (&$seen, $label): callable {
+            return static function (RequestInterface $request, array $options) use ($handler, &$seen, $label) {
+                $seen[] = $label . ' ' . $request->getUri();
+
+                return $handler($request, $options);
+            };
+        };
     }
 }

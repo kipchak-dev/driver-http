@@ -12,6 +12,9 @@ the PSR-17 factories, for libraries and SDKs that require the PHP standards.
 
 ## Versions
 
+- **2.15** — `Library\Middleware::push()` registers Guzzle middleware that every request through the driver passes
+  through: its Laravel clients, the drivers built on them, and its PSR-18 clients. Packages such as the Circuit
+  Breaker middleware use it. Nothing changes until something is registered.
 - **2.14** — every request from one Laravel client reuses the same connection pool, so connections stay open
   between requests in a FrankenPHP worker. Before, each request opened a new connection, which under load left
   thousands of sockets in `TIME_WAIT` and made requests fail. No change to the API.

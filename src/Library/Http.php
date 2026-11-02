@@ -35,6 +35,9 @@ class Http extends Factory
     {
         // A handler set on the request itself (setHandler()) still replaces this one.
         $request = parent::newPendingRequest()->setHandler($this->handler ??= Utils::chooseHandler());
+        foreach (Middleware::all() as $middleware) {
+            $request->withMiddleware($middleware);
+        }
 
         return $this->baseUrl === null ? $request : $request->baseUrl($this->baseUrl);
     }
