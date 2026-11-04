@@ -39,5 +39,19 @@
         "kipchak/driver-config": "^1",
         "php-http/client-integration-tests": "^4.1",
         "phpunit/phpunit": "^12"
+    },
+    "extra": {
+        "kipchak": {
+            "type": "driver",
+            "config": "sample.config.php",
+            "configName": "kipchak.http.php",
+            "initialise": "\\Kipchak\\Driver\\Http\\Http::initialise($container);",
+            "after": [
+                "kipchak/driver-config",
+                "kipchak/driver-logger"
+            ],
+            "before": [],
+            "docs": "https://kipchak.dev/docs/driver-http"
+        }
     }
 }
